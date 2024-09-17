@@ -20,13 +20,13 @@ function Dashboard() {
   return (
     <>
         <div>
-            <div className='fin-form'>
+            <div>
                
                 <Navbar />
                 <FinancialRecordForm />
             </div>
-            <div>Total Monthly: {totalMonthly}</div>
-            <div className='fin-list'>
+            <div className='pl-4 mt-2 text-2xl font-semibold'>Total Monthly: {totalMonthly}</div>
+            <div>
                 <FinancialRecordList />
             </div>
         </div>
