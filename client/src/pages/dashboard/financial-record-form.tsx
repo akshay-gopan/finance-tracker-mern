@@ -1,143 +1,13 @@
-// import React from "react";
-// import { useState } from "react";
-// import { useUser } from "@clerk/clerk-react";
-// import { useFinancialRecords } from "../../context/financial-record-context";
-
-// function FinancialRecordForm() {
-//   const [description, setDescription] = useState<string>("");
-//   const [amount, setAmount] = useState<string>("");
-//   const [type, setType] = useState<string>("");
-//   const [category, setCategory] = useState<string>("");
-//   const [paymentMethod, setPaymentMethod] = useState<string>("");
-//   const { addRecord } = useFinancialRecords();
-
-//   const { user } = useUser();
-
-//   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-//     e.preventDefault();
-
-//     const formattedAmount =
-//     type === "expense" && parseFloat(amount) > 0
-//       ? -Math.abs(parseFloat(amount))
-//       : parseFloat(amount);
-
-//     const newRecord = {
-//       userId: user?.id ?? "",
-//       date: new Date(),
-//       description: description,
-//       amount: formattedAmount,
-//       type: type,
-//       category: category,
-//       paymentMethod: paymentMethod,
-//     };
-
-//     addRecord(newRecord);
-//     setDescription("");
-//     setAmount("");
-//     setType("");
-//     setCategory("");
-//     setPaymentMethod("");
-//   };
-
-//   return (
-//     <>
-//       <div>FinancialRecordForm</div>
-//       <div className="form-container">
-//         <form onSubmit={handleSubmit}>
-//           <div className="form-field">
-//             <label>Description:</label>
-//             <input
-//               type="text"
-//               required
-//               className="input"
-//               value={description}
-//               onChange={(e) => setDescription(e.target.value)}
-//             />
-//           </div>
-//           <div className="form-field">
-//             <label>Amount:</label>
-//             <input
-//               type="number"
-//               required
-//               className="input"
-//               value={amount}
-//               onChange={(e) => setAmount(e.target.value)}
-//             />
-//           </div>
-//           <div>
-//             <label>Type:</label>
-
-//             <label>
-//               <input
-//                 type="radio"
-//                 name="type"
-//                 value="income"
-//                 checked={type === "income"}
-//                 onChange={(e) => setType(e.target.value)}
-//               />
-//               Income
-//             </label>
-//             <label>
-//               <input
-//                 type="radio"
-//                 name="type"
-//                 value="expense"
-//                 checked={type === "expense"}
-//                 onChange={(e) => setType(e.target.value)}
-//               />
-//               Expense
-//             </label>
-
-//             {/* Display the selected option (optional) */}
-//           </div>
-//           <div className="form-field">
-//             <label>Category:</label>
-//             <select
-//               required
-//               className="input"
-//               value={category}
-//               onChange={(e) => setCategory(e.target.value)}
-//             >
-//               <option value="">Select a Category</option>
-//               <option value="Food">Food</option>
-//               <option value="Rent">Rent</option>
-//               <option value="Salary">Salary</option>
-//               <option value="Utilities">Utilities</option>
-//               <option value="Entertainment">Entertainment</option>
-//               <option value="Other">Other</option>
-//             </select>
-//           </div>
-//           <div className="form-field">
-//             <label>Payment Method:</label>
-//             <select
-//               required
-//               className="input"
-//               value={paymentMethod}
-//               onChange={(e) => setPaymentMethod(e.target.value)}
-//             >
-//               <option value="">Select a Payment Method</option>
-//               <option value="Cash">Cash</option>
-//               <option value="Credit Card">Credit Card</option>
-//               <option value="Bank Transfer">Bank Transfer</option>
-//             </select>
-//           </div>
-//           <button type="submit" className="button">
-//             Add Record
-//           </button>
-//         </form>
-//       </div>
-//     </>
-//   );
-// }
-
-// export default FinancialRecordForm;
-
-
 import React, { useState } from "react";
 import { useUser } from "@clerk/clerk-react";
 import { useFinancialRecords } from "../../context/financial-record-context";
+import CategoryPieChart from "./chartpie";
 
-const FinancialRecordForm = ({ onClose}) => {
+interface FinancialRecordFormProps {
+  onClose: () => void;
+}
+
+const FinancialRecordForm: React.FC<FinancialRecordFormProps> = ({ onClose }) => {
   const [description, setDescription] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("");
@@ -146,7 +16,7 @@ const FinancialRecordForm = ({ onClose}) => {
   const { addRecord } = useFinancialRecords();
   const { user } = useUser();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const formattedAmount =
@@ -277,6 +147,7 @@ const FinancialRecordForm = ({ onClose}) => {
 
 const FinancialRecordManager = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { records } = useFinancialRecords();  // Fetch records from context
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -287,14 +158,21 @@ const FinancialRecordManager = () => {
   };
 
   return (
-    <div className="p-4">
-      <button
-        onClick={handleOpenModal}
-        className="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition"
-      >
-        Add Expense
-      </button>
-      {isModalOpen && <FinancialRecordForm onClose={handleCloseModal} />}
+    <div className="px-8">
+      <div className="p-4">
+        <button
+          onClick={handleOpenModal}
+          className="bg-green-600 text-white font-semibold py-4 px-6 rounded-md hover:bg-green-700 transition"
+        >
+          Add Expense
+        </button>
+        {isModalOpen && <FinancialRecordForm onClose={handleCloseModal} />}
+      </div>
+      
+      <div className="mt-8">
+        {/* Display the CategoryPieChart component and pass records as props */}
+        <CategoryPieChart records={records} />
+      </div>
     </div>
   );
 };
